@@ -8,7 +8,7 @@ const USERS_TABLE = process.env.USERS_TABLE;
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 app.use(bodyParser.json({ strict: false }));
 // Create User endpoint
-app.post('/users', function (req, res) {
+app.post('/gcp', function (req, res) {
   const { userId, name, gcpid, endtoendid, remittanceinfo, clientref, amount, status } = req.body;
 const params = {
     TableName: USERS_TABLE,
@@ -26,13 +26,13 @@ const params = {
 dynamoDb.put(params, (error) => {
     if (error) {
       console.log(error);
-      res.status(400).json({ error: `Could not create user ${userId}` });
+      res.status(400).json({ error: `Could not create transaction ${userId}` });
     }
     res.json({ userId, name, gcpid, endtoendid, remittanceinfo, clientref, amount, status });
   });
 })
 // Get User endpoint
-app.get('/users/:userId', function (req, res) {
+app.get('/gcp/:userId', function (req, res) {
   const params = {
     TableName: USERS_TABLE,
     Key: {
@@ -42,13 +42,13 @@ app.get('/users/:userId', function (req, res) {
 dynamoDb.get(params, (error, result) => {
     if (error) {
       console.log(error);
-      res.status(400).json({ error: `Could not get user ${userId}` });
+      res.status(400).json({ error: `Could not get transaction ${userId}` });
     }
     if (result.Item) {
       const {userId, name, gcpid, endtoendid, remittanceinfo, clientref, amount, status} = result.Item;
-      res.json({ userId, name });
+      res.json({ userId, status });
     } else {
-      res.status(404).json({ error: `User ${userId} not found` });
+      res.status(404).json({ error: `Transaction ${userId} not found` });
     }
   });
 })
